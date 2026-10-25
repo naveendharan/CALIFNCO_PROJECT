@@ -295,10 +295,16 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    height: Platform.OS === 'web' ? ('100vh' as any) : '100%',
+    width: '100%',
+    overflow: 'hidden',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
   },
   bodyContainer: {
-    flex: 1
+    flex: 1,
+    height: '100%',
+    width: '100%',
+    overflow: 'hidden'
   },
   bottomNav: {
     flexDirection: 'row',
