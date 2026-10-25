@@ -1,0 +1,35 @@
+{
+  "execution_time": "2026-10-25T18:07:21.374675",
+  "product": {
+    "id": "CAL-RO-001",
+    "name": "Califnco AquaShield RO+UV+UF+Alkaline Purifier",
+    "category": "RO Water Purifiers",
+    "mrp": 16999,
+    "wholesale_price": 10899,
+    "specs": [
+      "10-Stage Multi-Pure",
+      "Active Copper + Alkaline",
+      "Digital TDS Display",
+      "10L Food-Grade Tank"
+    ],
+    "highlight": "99.9% TDS Reduction with Natural Mineral Retention",
+    "image_prompt": "Ultra realistic commercial luxury advertisement of Califnco AquaShield water purifier mounted on modern marble kitchen wall, crystal clear water stream pouring into glass, soft cinematic lighting, 8k resolution"
+  },
+  "caption": "\ud83d\udca7 UPGRADE YOUR HYDRATION WITH CALIFNCO! \ud83d\udca7\n\nMeet the all-new Califnco AquaShield RO+UV+UF+Alkaline Purifier \u2014 engineered for crystal-clear purity, unmatched reliability, and modern lifestyle aesthetics.\n\n\ud83c\udf1f Why Califnco?\n  \u2728 10-Stage Multi-Pure\n  \u2728 Active Copper + Alkaline\n  \u2728 Digital TDS Display\n  \u2728 10L Food-Grade Tank\n  \ud83d\udc8e 99.9% TDS Reduction with Natural Mineral Retention\n\n\ud83d\uded2 Retail Special: \u20b916,999 (Free Installation & 1-Yr Comprehensive Warranty)\n\ud83d\udcbc Verified Dealer Wholesale Price: \u20b910,899 (Bulk Orders Available)\n\n\ud83d\udcf2 Ready to place an order or join our Dealer Network?\n\ud83d\udc49 Download the Califnco Mobile App (Link in Bio)\n\ud83d\udce9 DM us or WhatsApp our B2B desk for instant wholesale catalog & quotation!\n\n#Califnco #PureWater #WaterPurifier #AlkalineWater #WaterTechnology #ROFilter #HealthyLiving #CleanDrinkingWater #KitchenAppliances #DealerWholesale #WaterPurifierService #SaveWater #SmartHome #PureHydration #MakeInIndia",
+  "image_file": "E:\\Project_files\\cali\\ai-automation\\sample_output\\CAL-RO-001_daily_post.png",
+  "instagram_status": {
+    "status": "published_simulated",
+    "platform": "Instagram (Meta Graph API)",
+    "timestamp": "2026-10-25T18:07:16.910236",
+    "image_file": "E:\\Project_files\\cali\\ai-automation\\sample_output\\CAL-RO-001_daily_post.png",
+    "caption_length": 920,
+    "hashtags_count": 15
+  },
+  "whatsapp_waha_status": {
+    "status": "ready_queued",
+    "platform": "WAHA (WhatsApp Status via Docker API)",
+    "endpoint": "http://localhost:3000/api/status",
+    "payload_caption": "\ud83d\udca7 UPGRADE YOUR HYDRATION WITH CALIFNCO! \ud83d\udca7\n\nMeet the all-new Califnco AquaShield RO+UV+UF+Alkaline Purifier \u2014 engineered ...",
+    "bonus_pts": "+10 Points WAHA Automation Verified"
+  }
+}

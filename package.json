@@ -1,0 +1,28 @@
+{
+  "name": "califnco-water-tech-suite",
+  "version": "1.0.0",
+  "description": "Califnco Water Technologies - Mobile E-Commerce App, Operations Admin Suite, and AI Social Automation",
+  "scripts": {
+    "mobile": "npm --prefix mobile-app start",
+    "mobile:android": "npm --prefix mobile-app run android",
+    "mobile:web": "npm --prefix mobile-app run web",
+    "admin": "npm --prefix admin-panel run dev",
+    "admin:build": "npm --prefix admin-panel run build",
+    "ai:once": "python ai-automation/daily_social_poster.py --once",
+    "ai:daemon": "python ai-automation/daily_social_poster.py --daemon"
+  },
+  "keywords": [
+    "water-purifier",
+    "ecommerce",
+    "react-native",
+    "expo",
+    "nextjs",
+    "vercel",
+    "firebase",
+    "razorpay",
+    "n8n",
+    "ai-automation"
+  ],
+  "author": "Califnco Engineering Team",
+  "license": "MIT"
+}

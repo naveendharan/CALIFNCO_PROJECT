@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # n8n Workflow Automation Engine
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: califnco_n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=Asia/Kolkata
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./workflow-n8n.json:/home/node/workflow-n8n.json
+
+  # WAHA (WhatsApp HTTP API) for WhatsApp Status Posting (Bonus +10 pts)
+  waha:
+    image: devlikeapro/waha:latest
+    container_name: califnco_waha
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - WAHA_ZIP_LOGS=true
+      - WAHA_PRINT_QR=true
+      - WAHA_LOG_LEVEL=info
+      - WHATSAPP_DEFAULT_ENGINE=NOWEB
+    volumes:
+      - waha_data:/app/.sessions
+
+volumes:
+  n8n_data:
+  waha_data:

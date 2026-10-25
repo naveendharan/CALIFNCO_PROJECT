@@ -1,0 +1,194 @@
+{
+  "name": "Califnco Daily AI Product Social Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "id": "1",
+      "name": "Daily 9AM Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Califnco Catalog Rotator\n// Selects the next scheduled product for daily spotlight\nconst catalog = [\n  {\n    \"id\": \"cal-001\",\n    \"name\": \"Califnco AquaShield RO+UV+UF+Alkaline Purifier\",\n    \"category\": \"RO Water Purifiers\",\n    \"features\": [\"10-Stage Purification\", \"Copper Boost Alkaline\", \"Digital TDS Display\", \"10L Stainless Steel Tank\"],\n    \"mrp\": 16999,\n    \"wholesalePrice\": 10899,\n    \"targetAudience\": \"Homeowners & Health-conscious families\",\n    \"imagePrompt\": \"Ultra realistic commercial advertisement photo of Califnco premium domestic RO water purifier mounted on modern luxury kitchen wall, crystal clear water stream pouring into transparent glass, clean lighting, 8k resolution, minimalist design\"\n  },\n  {\n    \"id\": \"cal-002\",\n    \"name\": \"Califnco CopperGuard Active Copper Mineral RO\",\n    \"category\": \"RO Water Purifiers\",\n    \"features\": [\"Infused Active Copper\", \"Micro-filtration UV\", \"Auto-Flush Solenoid\", \"Zero Water Waste Tech\"],\n    \"mrp\": 18499,\n    \"wholesalePrice\": 11999,\n    \"targetAudience\": \"Families seeking Ayurvedic copper wellness and pure hydration\",\n    \"imagePrompt\": \"Commercial studio product photography of Califnco copper water purifier with rose-gold metallic accents, condensation drops on pure glass pitcher, sparkling mineral water, studio softbox lighting, photorealistic\"\n  },\n  {\n    \"id\": \"cal-003\",\n    \"name\": \"Califnco PureDrive 100 GPD Heavy Flow Booster Pump\",\n    \"category\": \"Booster Pumps & Motors\",\n    \"features\": [\"100 GPD Heavy Flow\", \"36V High Torque DC Motor\", \"Ultra-Quiet SilentVibe Technology\", \"CE & RoHS Certified\"],\n    \"mrp\": 2499,\n    \"wholesalePrice\": 1550,\n    \"targetAudience\": \"Plumbers, technicians, and water purifier dealers\",\n    \"imagePrompt\": \"Industrial product shot of heavy duty water purifier booster pump motor, 100 GPD label, precision engineered brass fittings, clean white studio background, high contrast lighting, engineering catalog quality\"\n  },\n  {\n    \"id\": \"cal-004\",\n    \"name\": \"Califnco Commercial 50 LPH Heavy Duty RO Plant\",\n    \"category\": \"Commercial & Industrial RO\",\n    \"features\": [\"50 Litres Per Hour\", \"Stainless Steel 304 Skid Frame\", \"Dual 4040 Membrane\", \"Digital Flow & TDS Controller\"],\n    \"mrp\": 45000,\n    \"wholesalePrice\": 32000,\n    \"targetAudience\": \"Offices, schools, clinics, and industrial cafeterias\",\n    \"imagePrompt\": \"Professional photograph of Califnco 50 LPH stainless steel skid commercial RO plant, dual blue pressure vessels, digital pressure gauges, industrial kitchen setup, sharp focus, hyper-realistic\"\n  }\n];\n\n// Pick product based on current day of year\nconst dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);\nconst product = catalog[dayOfYear % catalog.length];\n\nreturn [{ json: { ...product, scheduledDate: new Date().toISOString() } }];"
+      },
+      "id": "2",
+      "name": "Select Today's Spotlight Product",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "jsonParameters": true,
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        },
+        "bodyParametersJson": "={\n  \"inputs\": $json[\"imagePrompt\"]\n}"
+      },
+      "id": "3",
+      "name": "Generate AI Product Image (Hugging Face)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [720, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://api.cloudinary.com/v1_1/{{$env.CLOUDINARY_CLOUD_NAME}}/image/upload",
+        "method": "POST",
+        "sendBinaryData": true,
+        "binaryPropertyName": "data",
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "upload_preset",
+              "value": "califnco_social"
+            }
+          ]
+        }
+      },
+      "id": "4",
+      "name": "Upload to Cloudinary (Public HTTPS URL)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [950, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{$env.GEMINI_API_KEY}}",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "={\n  \"contents\": [{\n    \"parts\": [{\n      \"text\": \"You are a professional social media marketing expert for Califnco, a premium water purifier and water tech manufacturer. Write an engaging, high-converting Instagram caption for this product:\\n\\nProduct: \" + $json[\"name\"] + \"\\nCategory: \" + $json[\"category\"] + \"\\nFeatures: \" + $json[\"features\"].join(\", \") + \"\\nMIRP: ₹\" + $json[\"mrp\"] + \"\\nWholesale Price: ₹\" + $json[\"wholesalePrice\"] + \"\\n\\nInclude:\\n1. Catchy headline with emojis\\n2. Key health & pure water benefits\\n3. Clear Call to Action (DM for Dealer Wholesale Rates / Tap Link in Bio to Order)\\n4. 15-20 trending, highly relevant hashtags including #Califnco #PureWater #ROPurifier #WaterFiltration #CleanDrinkingWater #HomeAppliances #HealthyLiving #WholesaleWaterSpares\"\n    }]\n  }]\n}"
+      },
+      "id": "5",
+      "name": "Generate AI Caption & Hashtags (Gemini/Groq)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [720, 420]
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v19.0/{{$env.INSTAGRAM_ACCOUNT_ID}}/media",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "={\n  \"image_url\": $node[\"Upload to Cloudinary (Public HTTPS URL)\"].json[\"secure_url\"],\n  \"caption\": $node[\"Generate AI Caption & Hashtags (Gemini/Groq)\"].json[\"candidates\"][0][\"content\"][\"parts\"][0][\"text\"],\n  \"access_token\": \"{{$env.META_ACCESS_TOKEN}}\"\n}"
+      },
+      "id": "6",
+      "name": "Create Instagram Media Container",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1200, 260]
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v19.0/{{$env.INSTAGRAM_ACCOUNT_ID}}/media_publish",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "={\n  \"creation_id\": $json[\"id\"],\n  \"access_token\": \"{{$env.META_ACCESS_TOKEN}}\"\n}"
+      },
+      "id": "7",
+      "name": "Publish to Instagram Post",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1420, 260]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.WAHA_ENDPOINT || 'http://localhost:3000'}}/api/status",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "={\n  \"session\": \"default\",\n  \"file\": {\n    \"url\": $node[\"Upload to Cloudinary (Public HTTPS URL)\"].json[\"secure_url\"],\n    \"caption\": $node[\"Generate AI Caption & Hashtags (Gemini/Groq)\"].json[\"candidates\"][0][\"content\"][\"parts\"][0][\"text\"].substring(0, 500)\n  }\n}"
+      },
+      "id": "8",
+      "name": "Post to WhatsApp Status (WAHA Bonus +10pts)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1420, 440]
+    }
+  ],
+  "connections": {
+    "Daily 9AM Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Select Today's Spotlight Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Today's Spotlight Product": {
+      "main": [
+        [
+          {
+            "node": "Generate AI Product Image (Hugging Face)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Generate AI Caption & Hashtags (Gemini/Groq)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate AI Product Image (Hugging Face)": {
+      "main": [
+        [
+          {
+            "node": "Upload to Cloudinary (Public HTTPS URL)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Cloudinary (Public HTTPS URL)": {
+      "main": [
+        [
+          {
+            "node": "Create Instagram Media Container",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Instagram Media Container": {
+      "main": [
+        [
+          {
+            "node": "Publish to Instagram Post",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Post to WhatsApp Status (WAHA Bonus +10pts)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
